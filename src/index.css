@@ -1,0 +1,136 @@
+:root {
+  /* Clean Professional Light Theme (SaaS aesthetic) */
+  --bg-color: #f7f9fa;
+  --panel-bg: #ffffff;
+  --panel-border: #e0e0e0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #5e5e5e;
+  --accent-color: #2563eb;
+  --accent-hover: #1d4ed8;
+  
+  --easy-color: #008a4b;
+  --easy-bg: #e6f6ee;
+  --medium-color: #b27409;
+  --medium-bg: #fdf5e2;
+  --hard-color: #cc2936;
+  --hard-bg: #feeceb;
+  --basic-color: #475569;
+  --basic-bg: #f1f5f9;
+
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Professional Panels */
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+}
+
+/* Chips / Badges */
+.glass-pill {
+  background: #f1f3f4;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.glass-pill:hover, .glass-pill.active {
+  background: #e8f0fe;
+  color: var(--accent-color);
+  border-color: #d2e3fc;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 24px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Forms and Inputs */
+input, select {
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+  width: 100%;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px var(--accent-color);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  transition: color 0.15s;
+  user-select: none;
+}
+.checkbox-label:hover {
+  color: var(--text-primary);
+}
