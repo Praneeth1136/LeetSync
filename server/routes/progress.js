@@ -1,6 +1,6 @@
 import express from 'express';
 import User from '../models/User.js';
-import authMiddleware from '../middleware/auth.js';
+import authMiddleware from '../middleware/protect.js';
 
 const router = express.Router();
 
@@ -29,7 +29,8 @@ router.post('/toggle', authMiddleware, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const existingIndex = user.solvedQuestions.findIndex(q => q.questionId === String(questionId));
+    // Correctly convert the ObjectId to a string before comparing
+    const existingIndex = user.solvedQuestions.findIndex(q => q.questionId.toString() === String(questionId));
 
     if (existingIndex > -1) {
       // Question exists, so remove it (untick)

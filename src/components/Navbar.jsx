@@ -56,7 +56,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
       <div style={{ display: 'flex', alignItems: 'center', marginLeft: '16px' }}>
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Hi, {user.displayName || user.username}</span>
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Hi, {user.email || user.username}</span>
             <button onClick={logout} className="glass-button" style={{ padding: '8px 16px' }}>Logout</button>
           </div>
         ) : (

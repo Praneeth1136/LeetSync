@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/signup', async (req, res) => {
   try {
-    const { username, password, displayName } = req.body;
+    const { username, password, email } = req.body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ username });
@@ -20,13 +20,13 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new user
-    const newUser = new User({ username, password: hashedPassword, displayName: displayName || username });
+    const newUser = new User({ username, password: hashedPassword, email: email });
     await newUser.save();
 
     // Create JWT
     const token = jwt.sign({ id: newUser._id, username }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    res.status(201).json({ token, username, displayName: newUser.displayName, message: 'Signup successful' });
+    res.status(201).json({ token, username, email: newUser.email, message: 'Signup successful' });
   } catch (error) {
     console.error('Signup error:', error);
     res.status(500).json({ message: 'Server error during signup' });
@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
     // Create JWT
     const token = jwt.sign({ id: user._id, username }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    res.status(200).json({ token, username: user.username, displayName: user.displayName, message: 'Login successful' });
+    res.status(200).json({ token, username: user.username, email: user.email, message: 'Login successful' });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });

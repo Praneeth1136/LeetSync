@@ -6,7 +6,7 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const { login, signup } = useAuth();
 
@@ -16,7 +16,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     setError('');
     
-    const result = isLogin ? await login(username, password) : await signup(username, password, displayName);
+    const result = isLogin ? await login(username, password) : await signup(username, password, email);
     
     if (result.success) {
       onClose();
@@ -38,13 +38,13 @@ const AuthModal = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {!isLogin && (
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Display Name</label>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Email</label>
               <input 
-                type="text" 
+                type="email" 
                 className="glass-input" 
                 style={{ width: '100%', padding: '12px', boxSizing: 'border-box' }}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required={!isLogin}
               />
             </div>

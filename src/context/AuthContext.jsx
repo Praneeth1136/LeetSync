@@ -1,14 +1,40 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import api from '../api/axios';
+
+const setCookie = (name, value, days) => {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+};
+
+const getCookie = (name) => {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for(let i=0;i < ca.length;i++) {
+    let c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+};
+
+const eraseCookie = (name) => {   
+  document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+};
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('username');
-    const savedDisplay = localStorage.getItem('displayName');
-    return savedUser ? { username: savedUser, displayName: savedDisplay || savedUser } : null;
+    const savedUser = getCookie('username');
+    const savedEmail = getCookie('email');
+    return savedUser ? { username: savedUser, email: savedEmail || '' } : null;
   });
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [token, setToken] = useState(getCookie('token') || null);
   const [progress, setProgress] = useState([]);
 
   useEffect(() => {
@@ -17,86 +43,67 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      logout();
+    };
+    window.addEventListener('unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('unauthorized', handleUnauthorized);
+  }, []);
+
   const fetchProgress = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/progress', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setProgress(data);
-      } else {
-        if (res.status === 401) {
-          logout();
-        }
-      }
+      const res = await api.get('/progress');
+      setProgress(res.data);
     } catch (error) {
       console.error('Failed to fetch progress', error);
     }
   };
 
   const login = async (username, password) => {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    
-    const data = await res.json();
-    if (res.ok) {
+    try {
+      const res = await api.post('/auth/login', { username, password });
+      const data = res.data;
       setToken(data.token);
-      setUser({ username: data.username, displayName: data.displayName });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('displayName', data.displayName || data.username);
+      setUser({ username: data.username, email: data.email });
+      setCookie('token', data.token, 7);
+      setCookie('username', data.username, 7);
+      setCookie('email', data.email || '', 7);
       return { success: true };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || 'Login failed' };
     }
-    return { success: false, message: data.message };
   };
 
-  const signup = async (username, password, displayName) => {
-    const res = await fetch('http://localhost:5000/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, displayName })
-    });
-    
-    const data = await res.json();
-    if (res.ok) {
+  const signup = async (username, password, email) => {
+    try {
+      const res = await api.post('/auth/signup', { username, password, email });
+      const data = res.data;
       setToken(data.token);
-      setUser({ username: data.username, displayName: data.displayName });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('displayName', data.displayName || data.username);
+      setUser({ username: data.username, email: data.email });
+      setCookie('token', data.token, 7);
+      setCookie('username', data.username, 7);
+      setCookie('email', data.email || '', 7);
       return { success: true };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || 'Signup failed' };
     }
-    return { success: false, message: data.message };
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
     setProgress([]);
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('displayName');
+    eraseCookie('token');
+    eraseCookie('username');
+    eraseCookie('email');
   };
 
   const toggleQuestion = async (questionId, topic) => {
     if (!token) return;
     try {
-      const res = await fetch('http://localhost:5000/api/progress/toggle', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ questionId, topic })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setProgress(data.solvedQuestions);
-      }
+      const res = await api.post('/progress/toggle', { questionId, topic });
+      setProgress(res.data.solvedQuestions);
     } catch (error) {
       console.error('Failed to toggle question', error);
     }

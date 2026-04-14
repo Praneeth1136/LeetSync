@@ -31,13 +31,13 @@ export const filterQuestions = (questions, filters, searchQuery) => {
 
     // Companies filter
     if (filters.companies && filters.companies.length > 0) {
-      const hasCompany = q.companies.some(c => filters.companies.includes(c));
+      const hasCompany = (q.companies || []).some(c => filters.companies.includes(c));
       if (!hasCompany) return false;
     }
 
     // Years filter
     if (filters.years && filters.years.length > 0) {
-      if (!filters.years.includes(q.year)) return false;
+      if (!filters.years.includes(String(q.year))) return false;
     }
 
     return true;

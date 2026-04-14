@@ -1,5 +1,3 @@
-import questions from './questions.json';
-
 export const platforms = ['LeetCode', 'GeeksForGeeks', 'HackerRank'];
 export const difficulties = ['Basic', 'Easy', 'Medium', 'Hard'];
 export const years = ['2026', '2025', '2024', '2023', '2022', '2021', '2020'];
@@ -72,5 +70,3 @@ export const taxonomy = [
     subtopics: ['Segment Tree', 'Fenwick Tree']
   }
 ];
-
-export const mockQuestions = questions;

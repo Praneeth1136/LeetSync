@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import './index.css';
-import { mockQuestions } from './utils/mockData';
 import { filterQuestions } from './utils/helpers';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import QuestionList from './components/QuestionList';
 import ProgressDashboard from './components/ProgressDashboard';
+import api from './api/axios';
 
 function App() {
+  const [questions, setQuestions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     platforms: [],
@@ -17,6 +18,18 @@ function App() {
     companies: [],
     years: []
   });
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const res = await api.get('/questions');
+        setQuestions(res.data);
+      } catch (error) {
+        console.error("Failed to fetch questions", error);
+      }
+    };
+    fetchQuestions();
+  }, []);
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => {
@@ -42,8 +55,8 @@ function App() {
   };
 
   const filteredQuestions = useMemo(() => {
-    return filterQuestions(mockQuestions, filters, searchQuery);
-  }, [filters, searchQuery]);
+    return filterQuestions(questions, filters, searchQuery);
+  }, [questions, filters, searchQuery]);
 
   return (
     <div className="app-container">
@@ -52,7 +65,7 @@ function App() {
       <main className="main-content">
         <Sidebar filters={filters} onFilterChange={handleFilterChange} onClearFilters={clearFilters} />
         <div style={{ flex: '1' }}>
-          <ProgressDashboard />
+          <ProgressDashboard allQuestions={questions} />
           <QuestionList questions={filteredQuestions} />
         </div>
       </main>
