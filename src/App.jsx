@@ -5,6 +5,7 @@ import { filterQuestions } from './utils/helpers';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import QuestionList from './components/QuestionList';
+import ProgressDashboard from './components/ProgressDashboard';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,7 +51,10 @@ function App() {
       
       <main className="main-content">
         <Sidebar filters={filters} onFilterChange={handleFilterChange} onClearFilters={clearFilters} />
-        <QuestionList questions={filteredQuestions} />
+        <div style={{ flex: '1' }}>
+          <ProgressDashboard />
+          <QuestionList questions={filteredQuestions} />
+        </div>
       </main>
     </div>
   );

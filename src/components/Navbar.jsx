@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import AuthModal from './AuthModal';
 import '../index.css';
 
 const Navbar = ({ searchQuery, setSearchQuery }) => {
+  const { user, logout } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-    <nav className="glass-panel animate-fade-in" style={{ 
+    <>
+      <nav className="glass-panel animate-fade-in" style={{ 
       padding: '16px 24px', 
       display: 'flex', 
       justifyContent: 'space-between', 
@@ -27,7 +33,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
           &lt;/&gt;
         </div> */}
         <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-          Redemption
+          LeetSync
         </h1>
       </div>
       
@@ -40,11 +46,26 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
           style={{ 
             paddingLeft: '36px', 
             background: '#ffffff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%23a0a0a0\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z\'/%3E%3C/svg%3E") no-repeat 10px center', 
-            backgroundSize: '16px' 
+            backgroundSize: '16px',
+            width: '100%',
+            boxSizing: 'border-box'
           }}
         />
       </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', marginLeft: '16px' }}>
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Hi, {user.displayName || user.username}</span>
+            <button onClick={logout} className="glass-button" style={{ padding: '8px 16px' }}>Logout</button>
+          </div>
+        ) : (
+          <button onClick={() => setIsModalOpen(true)} className="glass-button" style={{ padding: '8px 16px' }}>Login</button>
+        )}
+      </div>
     </nav>
+    <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 };
 

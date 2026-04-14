@@ -1,7 +1,19 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const QuestionCard = ({ question, index }) => {
+  const { isQuestionSolved, toggleQuestion, user } = useAuth();
+  const solved = isQuestionSolved(question.id);
   const diffClass = question.difficulty.toLowerCase();
+  
+  const handleTick = (e) => {
+    e.preventDefault(); 
+    if (!user) {
+      alert("Please login to track progress!");
+      return;
+    }
+    toggleQuestion(question.id, question.topic);
+  };
   
   return (
     <a 
@@ -30,7 +42,29 @@ const QuestionCard = ({ question, index }) => {
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)' }}>{question.id}. {question.title}</h3>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <div 
+            onClick={handleTick}
+            style={{
+              width: '24px', height: '24px', borderRadius: '50%',
+              border: '2px solid var(--accent-color)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              backgroundColor: solved ? 'var(--accent-color)' : 'transparent',
+              color: 'white',
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+              marginTop: '2px'
+            }}
+          >
+            {solved && (
+              <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{question.id}. {question.title}</h3>
+        </div>
         <span style={{ 
           color: `var(--${diffClass}-color)`, 
           backgroundColor: `var(--${diffClass}-bg)`, 
@@ -61,16 +95,18 @@ const QuestionCard = ({ question, index }) => {
         </span>
       </div>
 
-      <div>
-        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Asked in:</div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {question.companies.map(company => (
-            <span key={company} style={{ fontSize: '0.875rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--panel-border)' }}>
-              {company}
-            </span>
-          ))}
+      {question.companies && question.companies.length > 0 && (
+        <div>
+          <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Asked in:</div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {question.companies.map(company => (
+              <span key={company} style={{ fontSize: '0.875rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--panel-border)' }}>
+                {company}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </a>
   );
 };
